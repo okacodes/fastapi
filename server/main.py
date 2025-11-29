@@ -7,6 +7,7 @@ from jwt import encode as jwt_encode
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException
 from bson import ObjectId
+from config import get_settings
 
 app = FastAPI()
 
@@ -17,3 +18,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+
+# User model
+class User(BaseModel):
+    username: str
+    password: str
+
+
+# Connect to MongoDB
+client = MongoClient(get_settings().MONGODB_URL)
+db = client("fast")
+users_collection = db["users"]
+JWT_SECRET_KEY = get_settings().JWT_SECRET_KEY
+security = HTTPBearer()
+
+
+@app.get("/")
+async def homepage():
+    return {"message:" "Welcome to the homepage"}
+
+
+@app.post("/login")
+def login(user: User):
+    user_data = users_collection.find_one(
+        {"user": user.username, "password": user.password}
+    )
+    if user_data:
+        # generate a token
+        token = generate_token(user.username)
+    # convert objectId to string
+        user_data["_id"] = str(user_data["_id"])
+        user_data["token"] = token
+        return user_data
+    return {"message": "Username or password is incorrect."}
