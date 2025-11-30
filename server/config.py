@@ -10,12 +10,7 @@ class Settings(BaseSettings):
         title="JWT Secret Key"
     )
 
-    BASE_URL: HttpUrl = Field(
-        ...,
-        title="API Base URL",
-    )
-
-    MONGODB_URL: HttpUrl = Field(
+    MONGODB_URL: str = Field(
         ...,
         title="MongoDB Connection String"
     )

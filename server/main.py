@@ -28,6 +28,7 @@ class User(BaseModel):
 
 # Connect to MongoDB
 client = MongoClient(get_settings().MONGODB_URL)
+print(client)
 db = client("fast")
 users_collection = db["users"]
 JWT_SECRET_KEY = get_settings().JWT_SECRET_KEY
@@ -57,7 +58,7 @@ def login(user: User):
     return {"message": "Username or password is incorrect."}
 
 
-@app.register("/register")
+@app.post("/register")
 def register(user: User):
     # Check if user user exists
     existing_user = users.usercollection.find_one(
@@ -65,3 +66,34 @@ def register(user: User):
     )
     if existing_user:
         return {"message": "This username is unavailable."}
+    user_dict = user_dict()
+    users_collection.insert_one(user_dict)
+    token = generate_token(user.username)
+    user_dict["_id"] = str(user_dict["_id"])
+    user_dict["token"] = token
+    return user_dict
+
+
+@app.get("/api/user")
+def get_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    user_data = {
+        "username": "test1",
+        "password": "test1"
+    }
+    if user_data["username"] and user_data["email"]:
+        return user_data
+
+
+raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def generate_token(email: str) -> str:
+    payload = {"email": email}
+    token = jwt_encode(payload, SECRET_KEY, algorithm="HS256")
+    return token
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
