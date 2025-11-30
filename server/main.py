@@ -33,6 +33,9 @@ users_collection = db["users"]
 JWT_SECRET_KEY = get_settings().JWT_SECRET_KEY
 security = HTTPBearer()
 
+if client:
+    print("Client connected", client)
+
 
 @app.get("/")
 async def homepage():
@@ -52,3 +55,13 @@ def login(user: User):
         user_data["token"] = token
         return user_data
     return {"message": "Username or password is incorrect."}
+
+
+@app.register("/register")
+def register(user: User):
+    # Check if user user exists
+    existing_user = users.usercollection.find_one(
+        {"user": user.username}
+    )
+    if existing_user:
+        return {"message": "This username is unavailable."}
