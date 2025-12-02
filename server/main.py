@@ -39,12 +39,12 @@ JWT_SECRET_KEY = get_settings().JWT_SECRET_KEY
 security = HTTPBearer()
 
 if client:
-    print("Client connected", client)
+    print("Client connected")
 
 
 @app.get("/")
 async def homepage():
-    return {"message:" "Welcome to the homepage"}
+    return {"message": "Welcome to the homepage"}
 
 
 @app.post("/login")
@@ -53,7 +53,7 @@ def login(user: User):
         {"user": user.username, "password": user.password}
     )
     if user_data:
-        # generate a token
+    # generate a token
         token = generate_token(user.username)
     # convert objectId to string
         user_data["_id"] = str(user_data["_id"])
@@ -65,7 +65,7 @@ def login(user: User):
 @app.post("/register")
 def register(user: User):
     # Check if user user exists
-    existing_user = users.usercollection.find_one(
+    existing_user = users_collection.find_one(
         {"user": user.username}
     )
     if existing_user:
@@ -85,8 +85,11 @@ def get_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
         "username": "test1",
         "password": "test1"
     }
-    if user_data["username"] and user_data["email"]:
+    if user_data["username"]:
+        print("User true")
         return user_data
+    else:
+        print("User false")
     raise HTTPException(status_code=401, detail="Invalid token")
 
 
