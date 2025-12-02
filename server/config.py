@@ -3,7 +3,7 @@ from functools import lru_cache
 from pydantic import Field, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
+# Used to import environment variables
 class Settings(BaseSettings):
     JWT_SECRET_KEY: str = Field(
         ...,
