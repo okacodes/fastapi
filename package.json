@@ -1,0 +1,14 @@
+{
+  "name": "fastapi-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:client": "cd client && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
+
