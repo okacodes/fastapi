@@ -44,7 +44,7 @@ function Homepage() {
   return (
     <div className="homepage">
       <nav className="navbar">
-        <h1>FastAPI App</h1>
+        <h1>Firstpoint</h1>
         <div className="nav-buttons">
           {user ? (
             <>
@@ -68,7 +68,7 @@ function Homepage() {
 
       <main className="homepage-content">
         <div className="hero">
-          <h2>Welcome to FastAPI</h2>
+          <h2>Welcome to Firstpoint</h2>
           <p>
             {user
               ? `You're logged in as ${user.username}. Enjoy your stay!`
