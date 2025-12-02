@@ -13,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend here
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -25,11 +25,15 @@ class User(BaseModel):
     username: str
     password: str
 
+# Helpers
+def generate_token(username: str):
+    payload = {"username": username}
+    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
+    return token
 
 # Connect to MongoDB
 client = MongoClient(get_settings().MONGODB_URL)
-print(client)
-db = client("fast")
+db = client["fast"]
 users_collection = db["users"]
 JWT_SECRET_KEY = get_settings().JWT_SECRET_KEY
 security = HTTPBearer()
@@ -83,15 +87,7 @@ def get_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     }
     if user_data["username"] and user_data["email"]:
         return user_data
-
-
-raise HTTPException(status_code=401, detail="Invalid token")
-
-
-def generate_token(email: str) -> str:
-    payload = {"email": email}
-    token = jwt_encode(payload, SECRET_KEY, algorithm="HS256")
-    return token
+    raise HTTPException(status_code=401, detail="Invalid token")
 
 
 if __name__ == "__main__":
